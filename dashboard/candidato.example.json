@@ -1,0 +1,16 @@
+{
+  "_instrucciones": "Copia este archivo como dashboard/candidato.local.json (gitignored) y pon tus datos reales ahí. Los valores entre corchetes cuentan como vacíos.",
+  "nombre": "[TU_NOMBRE]",
+  "nombre_completo": "[TU_NOMBRE_COMPLETO]",
+  "ciudad": "[TU_CIUDAD, DEPARTAMENTO]",
+  "salario_minimo_mensual": 0,
+  "deal_breakers": [
+    "[CONDICIÓN QUE DESCARTA UNA OFERTA, p. ej. exige vehículo propio]"
+  ],
+  "respuestas_semilla": [
+    { "question": "¿Está dispuesto a viajar por trabajo?", "answer": "" },
+    { "question": "¿Cuál es su disponibilidad para empezar?", "answer": "" },
+    { "question": "¿Ciudad de residencia?", "answer": "" },
+    { "question": "¿Cuál es su aspiración o pretensión salarial mensual?", "answer": "" }
+  ]
+}

@@ -1,0 +1,139 @@
+% =========================================================
+% Hoja de vida de EJEMPLO (candidato ficticio).
+% Cópiala a cv/plantillas/hoja_de_vida_<rol>.tex y reemplaza todo con tus datos reales.
+% cv/plantillas/ está en .gitignore: tus hojas de vida y tu foto nunca se suben a git.
+% Compila con: pdflatex -interaction=nonstopmode -halt-on-error hoja_de_vida_<rol>.tex
+% Debe quedar en exactamente 1 página.
+% =========================================================
+
+\documentclass[10pt,a4paper]{article}
+
+% ---------- Interruptores ----------
+% \fototrue necesita Foto_perfil.jpeg junto a este archivo.
+\newif\iffoto       \fotofalse
+% \anexostrue agrega al final los PDF de soporte listados en la sección Anexos.
+\newif\ifanexos     \anexosfalse
+
+\usepackage{pdfpages}
+
+% ---------- Paquetes ----------
+\usepackage[top=0.8cm,bottom=0.6cm,left=1.5cm,right=1.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\IfFileExists{newtxtext.sty}{\usepackage{newtxtext}}{\usepackage{mathptmx}}
+\usepackage{graphicx,tikz,xcolor,enumitem,titlesec}
+\usepackage[hidelinks]{hyperref}
+
+% Texto extraíble correctamente por los ATS (ligaduras y tildes)
+\input{glyphtounicode}
+\pdfgentounicode=1
+
+% Sin cortes de palabra con guion
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\sloppy
+
+% El dashboard (Buscador) lee el rol del final de pdftitle y las palabras clave de pdfkeywords.
+\hypersetup{
+  pdftitle={Nombre Apellido - Hoja de Vida - Analista de Datos Junior},
+  pdfauthor={Nombre Apellido},
+  pdfsubject={Analista de Datos Junior: SQL, Power BI, Excel avanzado, indicadores de gestión y calidad de datos},
+  pdfkeywords={Analista de datos, análisis de datos, SQL, PostgreSQL, Power BI, Excel avanzado, Power Query, indicadores de gestión, KPI, tableros, reportes, calidad de datos, Python, pandas}
+}
+
+% ---------- Estilo ----------
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\definecolor{acento}{RGB}{31,56,100}
+\definecolor{linea}{RGB}{150,150,150}
+
+\titleformat{\section}{\large\bfseries\color{acento}}{}{0pt}{\MakeUppercase}[{\color{linea}\titlerule[0.5pt]}]
+\titlespacing*{\section}{0pt}{4pt}{2pt}
+
+\setlist[itemize]{leftmargin=1.1em,label=\textbullet,topsep=2pt,itemsep=0.5pt,parsep=0pt}
+
+% \cargo{Cargo}{Empresa}{Ciudad}{Fechas}
+\newcommand{\cargo}[4]{%
+  \par\noindent\textbf{#1} \textbar\ #4\par
+  \noindent\textit{#2} · #3\par}
+
+\begin{document}
+\small\linespread{0.97}\selectfont
+
+% ---------- Encabezado ----------
+\noindent
+\begin{minipage}[c]{\iffoto 0.83\textwidth\else\textwidth\fi}
+  {\fontsize{20}{22}\selectfont\bfseries Nombre Apellido}\par\vspace{3pt}
+  {\normalsize\bfseries\color{acento} Analista de Datos \textbar\ SQL, Power BI, Excel e indicadores de gestión}\par
+  \vspace{4pt}
+  Ciudad, Departamento, País \textbar\ +57 300 000 0000 \textbar\ Disponibilidad inmediata\par
+  \href{mailto:nombre@example.com}{nombre@example.com} \textbar\ \href{https://github.com/usuario}{github.com/usuario}\par
+  \href{https://www.linkedin.com/in/usuario}{linkedin.com/in/usuario}\par
+\end{minipage}%
+\iffoto
+\hfill
+\begin{minipage}[c]{2.3cm}
+  \begin{tikzpicture}
+    \clip (0,0) circle (1.12cm);
+    \node[inner sep=0pt] at (0,-0.12cm){\includegraphics[width=2.55cm]{Foto_perfil.jpeg}};
+  \end{tikzpicture}
+\end{minipage}
+\fi
+\par
+
+% ---------- Perfil ----------
+\section{Perfil profesional}
+Profesional en Ingeniería de Sistemas con dos años en análisis de datos, reportería y construcción de indicadores de gestión. Escribo consultas SQL sobre PostgreSQL y construyo tableros en Power BI y Excel avanzado con Power Query. Valido y depuro información de varias fuentes para entregar datos consistentes. Este párrafo es un ejemplo: describe aquí solo lo que puedas demostrar.
+
+% ---------- Experiencia ----------
+\section{Experiencia profesional}
+
+\cargo{Analista de Datos}{Empresa Ejemplo S.A.S.}{Ciudad}{01/2024 -- Actualidad}
+\begin{itemize}
+  \item Construyo y mantengo los tableros e indicadores de gestión (KPI) de ventas que usa la gerencia, sobre consultas SQL en PostgreSQL.
+  \item Automaticé la consolidación semanal de reportes en Excel con Power Query, lo que eliminó el trabajo manual de copiar datos.
+  \item Valido y depuro datos de tres sistemas de origen antes de publicarlos. % CONFIRMAR: número real de sistemas de origen.
+\end{itemize}\vspace{3pt}
+
+\cargo{Auxiliar de Información}{Comercializadora Ficticia Ltda.}{Ciudad}{02/2022 -- 12/2023}
+\begin{itemize}
+  \item Digitalicé y mantuve actualizadas las bases de datos de clientes e inventario.
+  \item Elaboré reportes mensuales en Excel y Power BI para el área comercial.
+  \item Brindé soporte a los usuarios en Microsoft Excel y Word.
+\end{itemize}
+
+% ---------- Proyectos ----------
+\section{Proyectos destacados}
+\begin{itemize}\raggedright
+  \item \textbf{Tablero de ventas de ejemplo} (PostgreSQL, SQL, Power BI). Modelo de datos de ventas e inventario con un tablero de indicadores por sucursal. \href{https://github.com/usuario/proyecto-ejemplo}{github.com/usuario/proyecto-ejemplo}
+  \item \textbf{Proyecto de grado: análisis de datos de producción} (Python, pandas). Limpieza de registros de producción y tablero de indicadores de la línea.
+\end{itemize}
+
+% ---------- Habilidades ----------
+\section{Habilidades técnicas}
+\textbf{Reportería y BI:} Power BI, Excel avanzado, Power Query; tableros e indicadores de gestión (KPI).\par
+\textbf{SQL y bases de datos:} consultas SQL, PostgreSQL, MySQL, modelado de datos relacional.\par
+\textbf{Calidad de datos:} validación y depuración de información de varias fuentes; limpieza con Python (pandas).\par
+\textbf{Otras herramientas:} Git, GitHub, Linux.\par
+
+% ---------- Educación ----------
+\section{Educación}
+\cargo{Ingeniero de Sistemas}{Universidad Ejemplo}{Ciudad}{2018 -- 2023}
+Formación en bases de datos, estadística y programación.\par
+
+% ---------- Certificaciones ----------
+\section{Cursos, certificaciones e idiomas}
+\begin{itemize}[itemsep=0pt]
+  \item Curso de ejemplo en visualización de datos, Plataforma Ejemplo (01/2025)
+  \item Curso de ejemplo en bases de datos con SQL, Institución Ejemplo (06/2024)
+\end{itemize}
+\vspace{2pt}\noindent\textbf{Idiomas:} español nativo \textbar\ inglés intermedio
+
+% ---------- Anexos ----------
+\ifanexos
+\newpage
+% Activa \anexostrue solo cuando estos PDF existan junto a la hoja de vida.
+\includepdf[pages=-]{anexos/certificado_ejemplo.pdf}
+\fi
+
+\end{document}

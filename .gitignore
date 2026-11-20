@@ -119,3 +119,29 @@ company_research/*.json
 
 # Brainstorm mockups (superpowers visual companion) - never ship
 .superpowers/
+
+# Dashboard: per-job state is personal; build output and deps are generated
+**/job_scraper/dashboard_state.json
+**/job_scraper/application_answers.json
+**/job_scraper/cv_custom/
+dashboard/dist/
+
+# Offer descriptions the dashboard hands to /adaptar-plantilla (personal, per offer)
+**/job_scraper/ofertas/
+
+# ---- Datos personales: viven solo en local, nunca en git ----
+# Hojas de vida reales por rol (el repo trae una de ejemplo en templates/plantillas/)
+cv/plantillas/*
+!cv/plantillas/README.md
+# Ofertas agregadas a mano desde el dashboard
+**/job_scraper/manual_jobs.json
+# Perfil del candidato para el dashboard (nombre, piso salarial, respuestas)
+dashboard/candidato.local.json
+# Lista de términos privados que tools/privacy_scan.py bloquea en commits
+.private-terms.txt
+# Carpeta personal de hoja de vida (fuente de datos_cv.json)
+Hoja_de_Vida_*/
+[Hh]oja[_ ][Dd]e[_ ][Vv]ida*/
+[Hh]oja[Dd]e[Vv]ida*/
+# Salida de graphify-rs (indexa también archivos privados)
+graphify-rs-out/

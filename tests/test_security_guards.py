@@ -668,6 +668,32 @@ class GitignorePatternBehaviorTests(unittest.TestCase):
                     f"{path}: expected ignored={expect_ignored}",
                 )
 
+    def test_personal_dashboard_and_cv_files_are_ignored_but_their_examples_are_not(self):
+        cases = {
+            "cv/plantillas/hoja_de_vida_analista_datos.tex": True,
+            "cv/plantillas/Foto_perfil.jpeg": True,
+            "cv/plantillas/README.md": False,
+            "templates/plantillas/hoja_de_vida_ejemplo.tex": False,
+            "dashboard/candidato.local.json": True,
+            "dashboard/candidato.example.json": False,
+            "Hoja_de_Vida_Nombre_Apellido_LaTeX/datos_cv.json": True,
+            ".private-terms.txt": True,
+            "job_scraper/manual_jobs.json": True,
+            "job_scraper/application_answers.json": True,
+            "job_scraper/ofertas/acme.txt": True,
+        }
+        for path, expect_ignored in cases.items():
+            with self.subTest(path=path):
+                result = subprocess.run(
+                    ["git", "-C", str(self.root), "check-ignore", "-q", path],
+                    capture_output=True,
+                )
+                self.assertEqual(
+                    result.returncode == 0,
+                    expect_ignored,
+                    f"{path}: expected ignored={expect_ignored}",
+                )
+
     def test_interview_prep_pack_is_ignored_at_the_path_the_command_writes(self):
         # Derived, never copied: a hardcoded prep-pack path pins only that
         # documents/applications/** still matches that shape - which the

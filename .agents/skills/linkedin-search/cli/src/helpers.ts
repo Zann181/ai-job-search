@@ -64,6 +64,7 @@ export interface JobDetail extends JobCard {
   jobFunction: string | null
   industries: string | null
   isActive: boolean
+  applicants: string | null
 }
 
 /**
@@ -332,6 +333,11 @@ export function parseJobDetail(html: string, id: string): JobDetail {
   const topcard = descStart === -1 ? html : html.slice(0, descStart)
   const isActive = !/closed-job__flavor|no longer accepting applications/i.test(topcard)
 
+  // Applicant count as LinkedIn words it ("Over 200 applicants", "Be among the
+  // first 25 applicants"), from the top card only.
+  const applicantsMatch = topcard.match(/class="num-applicants__caption[^"]*"[^>]*>([\s\S]*?)<\//i)
+  const applicants = applicantsMatch ? clean(applicantsMatch[1]) || null : null
+
   return {
     id,
     title: title ? clean(title) : "(untitled)",
@@ -346,6 +352,7 @@ export function parseJobDetail(html: string, id: string): JobDetail {
     jobFunction: criteria["job function"] ?? null,
     industries: criteria["industries"] ?? null,
     isActive,
+    applicants,
   }
 }
 

@@ -72,6 +72,115 @@ The core workflow (self-profiling, fit evaluation, and the drafter-reviewer appl
 
 The framework encodes career guidance best practices, including structured evaluation criteria, forward-looking cover letter framing, and optional salary benchmarking.
 
+## Guía rápida de esta versión (español)
+
+Esta versión agrega al framework un **dashboard local** en español, **once portales de empleo**
+para Colombia y trabajo remoto, la skill **`/adaptar-plantilla`** (hojas de vida LaTeX de una página
+por rol) y una **barrera de privacidad** para que tus datos personales se queden en tu equipo.
+
+### Requisitos
+
+| | |
+|---|---|
+| **[Claude Code](https://claude.com/claude-code)** | Los comandos (`/setup`, `/scrape`, `/apply`, ...) y las tareas del dashboard corren sobre él. |
+| **[Bun](https://bun.sh)** | Ejecuta los CLI de portales y el dashboard. |
+| **Python 3.10+** | Las herramientas de `tools/` (en Windows: `python`, no `python3`). |
+| **MiKTeX / TeX Live** | `pdflatex` para las hojas de vida por rol; `xelatex` para la carta (`cover.cls`); `lualatex` para el CV moderncv de `/apply`. |
+| **Brave** *(opcional)* | Solo para **Postular con Chrome** desde el dashboard. |
+
+### 1. Instalar los CLI de portales
+
+```bash
+python3 tools/install_portal_clis.py   # Windows: python tools\install_portal_clis.py
+```
+
+Corre `bun install --ignore-scripts` en cada `.agents/skills/*/cli/`. Portales nuevos de esta versión:
+
+| Portal | Qué busca |
+|--------|-----------|
+| `computrabajo-search` | Computrabajo Colombia (co.computrabajo.com), por ciudad o departamento, y detalle de una oferta |
+| `elempleo-search` | elempleo.com, ofertas en ciudades de Colombia, y detalle de una oferta |
+| `magneto-search` | Magneto365, ofertas más recientes por cargo o ciudad, y detalle de una oferta |
+| `serviciodeempleo-search` | Servicio Público de Empleo (buscadordeempleo.gov.co): SENA APE y cajas de compensación; detalle por código |
+| `getonbrd-search` | Get on Board: empleos tech, producto, datos y marketing en Colombia y LatAm |
+| `arbeitnow-search` | Arbeitnow: solo las ofertas marcadas como remotas |
+| `himalayas-search` | Himalayas: trabajo remoto mundial con datos de salario y seniority |
+| `jobicy-search` | Jobicy: trabajo remoto por región (Anywhere, LATAM, ...) |
+| `remoteok-search` | Remote OK: trabajo remoto mundial, sobre todo software, diseño y marketing |
+| `weworkremotely-search` | We Work Remotely: últimas ofertas remotas de todas las categorías |
+| `workingnomads-search` | Working Nomads: últimas ofertas remotas seleccionadas |
+
+Cada portal se puede apagar para `/scrape` con `enabled: false` en su `SKILL.md`.
+
+### 2. Tu perfil: `/setup`
+
+Dentro de Claude Code, `/setup` llena `CLAUDE.md` y los archivos de perfil de
+`.claude/skills/job-application-assistant/` desde tu carpeta `documents/`, un CV pegado o una
+entrevista (ver [Quick start](#quick-start)). **Ojo:** esos archivos están versionados; si tu copia
+es para tu búsqueda personal, usa un repositorio privado (ver el aviso en *Fork and clone*).
+
+### 3. Dónde va tu información privada (nunca se sube a git)
+
+Todo esto está en `.gitignore` y vive solo en tu equipo:
+
+| Archivo o carpeta | Qué contiene | Cómo se crea |
+|-------------------|--------------|--------------|
+| `dashboard/candidato.local.json` | Nombre, ciudad, piso salarial (COP), deal-breakers y respuestas iniciales que usa el dashboard | Copia `dashboard/candidato.example.json` y edítalo |
+| `cv/plantillas/` | Tus `hoja_de_vida_<rol>.tex` reales y `Foto_perfil.jpeg` (solo su `README.md` está versionado) | Copia `templates/plantillas/hoja_de_vida_ejemplo.tex` (candidato ficticio) |
+| `Hoja_de_Vida_<Nombre>_LaTeX/` | Tu carpeta de hoja de vida con `datos_cv.json`, la fuente de hechos para los CV generados | La creas tú en la raíz del repo; el dashboard la encuentra por el patrón `Hoja_de_Vida*` o por `DASHBOARD_CV_DIR` |
+| `.private-terms.txt` | Tus términos privados (nombre, teléfono, correo, usuarios, empresas), uno por línea | Lo creas tú; `#` inicia un comentario |
+| `job_scraper/` (estado) | `seen_jobs.json`, `manual_jobs.json`, `application_answers.json`, `dashboard_state.json`, `cv_custom/`, `ofertas/` | Los escriben `/scrape` y el dashboard |
+| `cv/main_*`, `cover_letters/cover_*`, `job_search_tracker.csv`, `documents/...` | CV y cartas por oferta, tracker y documentos de carrera | Los escriben `/apply`, `/adaptar-plantilla` y `/setup` |
+
+### 4. Dashboard
+
+```bash
+dashboard\iniciar.bat               # Windows: instala dependencias la primera vez y abre el navegador
+bun run dashboard/src/main.ts       # cualquier sistema (antes: cd dashboard && bun install)
+```
+
+Abre http://127.0.0.1:4317 (solo escucha en localhost; cada arranque genera un token nuevo para la
+API). Secciones:
+
+- **Plantillas:** tus hojas de vida de `cv/plantillas/`: editor LaTeX, compilar con Ctrl+S, vista de
+  la hoja, foto e importar `.tex`.
+- **Buscador:** busca en los portales que elijas con el rol y las palabras clave de tus plantillas
+  (`pdftitle`/`pdfkeywords`), puntúa cada oferta contra ese perfil y, al marcarla, la pasa a
+  Ofertas como «por postular».
+- **Ofertas:** las ofertas puntuadas, por postular, con CV y en proceso. Desde cada una: generar CV y
+  carta (`/adaptar-plantilla` o `/apply`), estimar la probabilidad, seguimiento del portal y
+  **Postular con Chrome**, que llena el formulario en tu Brave y se detiene antes del botón final de
+  envío: ese clic siempre lo haces tú.
+
+Detalles en [`dashboard/README.md`](dashboard/README.md).
+
+### 5. `/adaptar-plantilla`
+
+`/adaptar-plantilla <URL o texto de la oferta>` evalúa el encaje, elige la plantilla de
+`cv/plantillas/` que más requisitos cubre, la adapta en una copia `cv/main_<empresa>_<rol>.tex` sin
+inventar hechos, compila con pdflatex a 1 página y verifica la capa de texto ATS. Modos: `--elegir`,
+`--plantilla <rol>`, `--lote`, `--revisar`, `--estado`. Nunca escribe en `cv/plantillas/`.
+
+### 6. Privacidad antes de subir a git
+
+```bash
+python3 tools/privacy_scan.py                  # revisa todo lo que git subiría (versionado + no ignorado)
+python3 tools/privacy_scan.py --staged         # revisa solo lo preparado para el commit
+python3 tools/privacy_scan.py --install-hook   # instala un pre-commit que corre --staged en cada commit
+```
+
+Busca cada término de `.private-terms.txt` sin distinguir mayúsculas ni tildes (un espacio del término
+también encuentra `_`, `-`, `.`, `(`, `)`, `/` o nada), en el contenido y en los nombres de archivo, y sale con
+código 1 si encuentra alguno. El hook no sobrescribe un `pre-commit` que ya exista.
+
+Antes de cada `git push`:
+
+- [ ] `python3 tools/privacy_scan.py` dice `OK`.
+- [ ] `git status` no muestra `candidato.local.json`, `cv/plantillas/*.tex`, `Hoja_de_Vida_*`, ni estado de `job_scraper/`.
+- [ ] `python3 tools/security_guards.py` dice `OK`.
+- [ ] Pasan las pruebas: `python3 -m unittest discover -s tests -t .` y `cd dashboard && bun test`.
+- [ ] `CLAUDE.md` y los archivos de perfil siguen con `[PLACEHOLDER]` si el repositorio es público.
+
 ## Quick start
 
 > 🎥 **Prefer to see it in action first?** [The Next New Thing did a hands-on walkthrough](https://www.youtube.com/watch?v=HoVxjMNFYv4) of how the workflow is actually used, from setup to a finished application (recorded August 2026 - commands may have evolved since).
@@ -386,6 +495,7 @@ ai-job-search/
 │   │   │   ├── 06-cover-letter-templates.md # LaTeX cover letter templates
 │   │   │   └── 07-interview-prep.md   # STAR examples + interview framework
 │   │   ├── job-scraper/               # Job search orchestration
+│   │   ├── adaptar-plantilla/         # /adaptar-plantilla adapt a one-page role CV to a posting
 │   │   └── upskill/                   # /upskill skill gap analysis and learning plan
 │   └── settings.json                  # Claude Code permissions (shared, scoped)
 ├── .agents/skills/                    # Job portal CLI tools
@@ -394,16 +504,32 @@ ai-job-search/
 │   ├── jobindex-search/               # Jobindex.dk (Denmark)
 │   ├── jobnet-search/                 # Jobnet.dk (Denmark, government portal)
 │   ├── linkedin-search/               # LinkedIn public job listings (country-agnostic)
-│   └── freehire-search/               # freehire.me tech job aggregator (multi-market, REST API)
+│   ├── freehire-search/               # freehire.me tech job aggregator (multi-market, REST API)
+│   ├── computrabajo-search/           # Computrabajo (Colombia)
+│   ├── elempleo-search/               # elempleo.com (Colombia)
+│   ├── magneto-search/                # Magneto365 (Colombia)
+│   ├── serviciodeempleo-search/       # Servicio Público de Empleo (Colombia, government aggregator)
+│   ├── getonbrd-search/               # Get on Board (tech jobs, Colombia + LatAm)
+│   └── arbeitnow-, himalayas-, jobicy-, remoteok-, weworkremotely-, workingnomads-search/
+│                                      # Remote-job boards (public JSON/RSS feeds)
+├── dashboard/                         # Local React + Bun dashboard (Plantillas, Buscador, Ofertas)
+│   ├── src/                           # Domain, application, infrastructure, HTTP API (127.0.0.1 only)
+│   ├── web/                           # React app
+│   ├── tests/                         # bun test
+│   ├── candidato.example.json         # Profile template; copy to candidato.local.json (gitignored)
+│   └── iniciar.bat                    # Windows launcher
 ├── assets/                            # README artwork (Pip the mascot, animated SVG diagrams)
 ├── cv/
-│   └── main_example.tex               # moderncv LaTeX template
+│   ├── main_example.tex               # moderncv LaTeX template
+│   └── plantillas/                    # Your real one-page role CVs + photo (gitignored except README.md)
 ├── cover_letters/
 │   ├── cover.cls                      # Custom cover letter LaTeX class
 │   ├── cover_example.tex              # Example cover letter (structural reference + CI smoke test)
 │   └── OpenFonts/                     # Lato + Raleway fonts
 ├── templates/                         # Custom templates registered via /add-template
-│   └── README.md                      # Folder layout instructions
+│   ├── README.md                      # Folder layout instructions
+│   └── plantillas/
+│       └── hoja_de_vida_ejemplo.tex   # Fictional one-page role CV to copy into cv/plantillas/
 ├── documents/                         # Career source materials for /setup Path A and /expand
 │   ├── README.md                      # Folder layout instructions
 │   ├── cv/                            # Master CV (PDF or .tex)
@@ -421,6 +547,7 @@ ai-job-search/
 │   ├── install_portal_clis.py         # Install every discovered portal CLI (bun install)
 │   ├── lint_skills.py                 # CI lint for skills, commands, settings.json
 │   ├── posting_guard.py               # Integrity gate: strip hidden text, flag injection-shaped lines
+│   ├── privacy_scan.py                # Block .private-terms.txt terms from committable/staged files (+ pre-commit hook)
 │   ├── robots_check.py                # Gate the browser-header retry against robots.txt
 │   ├── security_guards.py             # CI guards: permission allow/ask/deny, skill grants, gitignore, manifests
 │   ├── upstream_triage.py             # Sort upstream commits into worth-reviewing vs probably-skip

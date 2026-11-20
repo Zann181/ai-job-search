@@ -132,6 +132,27 @@ describe("parseJobDetail active-status detection", () => {
   });
 });
 
+describe("parseJobDetail applicant count", () => {
+  const page = (topcardExtra: string, description: string) => `
+    <h1 class="topcard__title">Data Engineer</h1>
+    ${topcardExtra}
+    <div class="show-more-less-html__markup">${description}</div>`;
+
+  test("reads the top-card caption as LinkedIn words it", () => {
+    const span = `<span class="num-applicants__caption topcard__flavor--metadata topcard__flavor--bullet">
+        Over 200 applicants
+      </span>`;
+    expect(parseJobDetail(page(span, "x"), "1").applicants).toBe("Over 200 applicants");
+    const figcaption = `<figcaption class="num-applicants__caption">Be among the first 25 applicants</figcaption>`;
+    expect(parseJobDetail(page(figcaption, "x"), "2").applicants).toBe("Be among the first 25 applicants");
+  });
+
+  test("is null when the top card has no caption, even if the description mentions one", () => {
+    const job = parseJobDetail(page("", '<span class="num-applicants__caption">Over 9000 applicants</span>'), "3");
+    expect(job.applicants).toBeNull();
+  });
+});
+
 describe("parseJobDetail dropped fields", () => {
   test("emits no applyUrl field", () => {
     // The extraction regex assumed class-before-href and never matched

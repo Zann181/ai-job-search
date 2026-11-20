@@ -15,6 +15,32 @@ per-file diff commands.
 
 ### Added
 
+- **`tools/privacy_scan.py`** - blocks the terms listed in a gitignored `.private-terms.txt` (one per
+  line) from every committable file (`git ls-files` plus untracked, non-ignored files), or with
+  `--staged` from the index copy of staged files. Matching ignores case and accents, a space in a term
+  also matches `_`, `-`, `.` or nothing, and file names are checked too. `--install-hook` writes a
+  pre-commit hook running `--staged` and refuses to replace a different existing hook. Tests in
+  `tests/test_privacy_scan.py` use fake terms only.
+
+- **Local dashboard** (`dashboard/`, React + Bun, Spanish UI on `127.0.0.1:4317`) with Plantillas,
+  Buscador and Ofertas sections over `seen_jobs.json`, the tracker and `cv/`. Personal values (name,
+  city, monthly salary floor, deal-breakers, seed answers) come from the gitignored
+  `dashboard/candidato.local.json`, falling back to the committed `candidato.example.json`; the page
+  gets the salary floor and city from `GET /api/perfil` behind the existing per-run token.
+
+- **Eleven portal search skills**: `computrabajo-search`, `elempleo-search`, `magneto-search`,
+  `serviciodeempleo-search` (Colombia), `getonbrd-search` (tech, Colombia + LatAm) and the remote
+  boards `arbeitnow-search`, `himalayas-search`, `jobicy-search`, `remoteok-search`,
+  `weworkremotely-search`, `workingnomads-search`. The single-file remote CLIs keep their search code
+  in `cli/src/commands/search.ts`, like the other portals.
+
+- **`/adaptar-plantilla`** (`.claude/skills/adaptar-plantilla/`) - picks the best-covering one-page
+  role CV in `cv/plantillas/` (gitignored) and adapts a copy to a posting, plus a fictional example
+  CV in `templates/plantillas/hoja_de_vida_ejemplo.tex` to start from.
+
+- **`linkedin-search detail` reports `applicants`** - the top card's applicant caption as LinkedIn
+  words it, or null.
+
 - **CI runs the Python suite on Windows** (`.github/workflows/ci.yml` `python-tests-windows`) - every
   job ran on Ubuntu, so a Windows-only failure reached master with all checks green: #480's test
   (an atomic rename that Windows file locking refuses) and #486's (a tool printing non-ASCII JSON

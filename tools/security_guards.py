@@ -211,6 +211,20 @@ REQUIRED_IGNORE_RULES = [
     "company_research/*.json",
     # Machine-local Claude Code user configuration and ad-hoc permissions approvals.
     ".claude/settings.local.json",
+    # Dashboard state: per-offer answers, CV customizations and saved offer texts.
+    "**/job_scraper/dashboard_state.json",
+    "**/job_scraper/application_answers.json",
+    "**/job_scraper/cv_custom/",
+    "**/job_scraper/ofertas/",
+    "**/job_scraper/manual_jobs.json",
+    # The candidate's real role CVs and photo; only the folder's README is tracked.
+    "cv/plantillas/*",
+    "!cv/plantillas/README.md",
+    # Dashboard profile (name, salary floor, seed answers) and the CV source folder.
+    "dashboard/candidato.local.json",
+    "Hoja_de_Vida_*/",
+    # The private-terms list tools/privacy_scan.py reads is itself personal data.
+    ".private-terms.txt",
 ]
 
 # Negation (re-include) rules the template legitimately ships. .gitignore is
@@ -225,6 +239,8 @@ ALLOWED_IGNORE_NEGATIONS = {
     "!cv/main_example.tex",
     "!cover_letters/cover_example.tex",
     "!documents/**/.gitkeep",
+    # The setup note for the gitignored role-CV folder; it holds no personal data.
+    "!cv/plantillas/README.md",
 }
 
 # Hook commands the template legitimately ships, as "<Event>:<command>" strings.

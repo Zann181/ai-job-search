@@ -24,3 +24,11 @@ templates/
 - `/add-template --list` shows registered templates; `/add-template --use <name>` switches; `/add-template --use default` reverts to the stock templates.
 
 Templates are stored with `[PLACEHOLDER]` tokens instead of personal data, so they are safe to commit and share.
+
+## `plantillas/`: example role CV for the dashboard
+
+`templates/plantillas/hoja_de_vida_ejemplo.tex` is a one-page LaTeX `article` CV for a fictional
+candidate, with the same switches (`\iffoto`, `\ifanexos`) and `\cargo` macro the dashboard's
+**Plantillas** section and `/adaptar-plantilla` expect. Copy it to
+`cv/plantillas/hoja_de_vida_<rol>.tex` and replace every value with your own. `cv/plantillas/` is
+gitignored, so your real CVs and photo stay local (see `cv/plantillas/README.md`).
